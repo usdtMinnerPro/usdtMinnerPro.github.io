@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USDT Mining pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #05c0a5;
+            --secondary: #0b3866;
+            --accent: #ffc107;
+            --dark: #0a192f;
+            --light: #f8f9fa;
+            --success: #28a745;
+            --warning: #fd7e14;
+            --danger: #dc3545;
+            --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: var(--gradient);
+            color: var(--light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* Login & Register Styles */
+        .auth-container {
+            width: 100%;
+            max-width: 400px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 50px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .auth-title {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+            color: var(--accent);
+        }
+
+        .auth-form .input-group {
+            margin-bottom: 20px;
+        }
+
+        .auth-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .auth-form input {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .auth-form input:focus {
+            border-color: var(--accent);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.2);
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background: var(--accent);
+            color: var(--dark);
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .auth-btn:hover {
+            background: #ffd700;
+            transform: translateY(-2px);
+        }
+
+        .auth-toggle {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        .auth-toggle a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .auth-toggle a:hover {
+            text-decoration: underline;
+        }
+
+        .auth-message {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .error {
+            background: rgba(220, 53, 69, 0.2);
+            border-left: 3px solid var(--danger);
+        }
+
+        .success {
+            background: rgba(40, 167, 69, 0.2);
+            border-left: 3px solid var(--success);
+        }
+
+        /* Main App Styles (hidden by default) */
+        .app-container {
+            display: none;
+            width: 100%;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .balance-container {
+            background: rgba(0,0,0,0.2);
+            border-radius: 15px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.1);
+            width: 100%;
+        }
+
+        .balance {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .balance span {
+            color: var(--accent);
+        }
+
+        .btn {
+            background: var(--accent);
+            color: var(--dark);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+        }
+
+        .mining-circle {
+            width: 220px;
+            height: 220px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 50%;
+            margin: 0 auto 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3), 
+                        inset 0 5px 15px rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.2);
+            overflow: hidden;
+        }
+
+        .mining-circle::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(transparent, var(--primary), transparent);
+            animation: rotate 4s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .mining-circle img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.3));
+        }
+
+        .mining-circle h2 {
+            font-size: 1.3rem;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .plans-title {
+            text-align: center;
+            margin: 30px 0 15px;
+            font-size: 1.5rem;
+            position: relative;
+        }
+
+        .plans-title::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 3px;
+            background: var(--accent);
+            margin: 10px auto;
+            border-radius: 3px;
+        }
+
+        .plans-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .plan {
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .plan-info {
+            flex: 1;
+        }
+
+        .plan-name {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .plan-name i {
+            color: var(--accent);
+        }
+
+        .plan-details {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin-bottom: 3px;
+        }
+
+        .plan-status {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-top: 5px;
+            background: var(--success);
+        }
+
+        .plan-price {
+            font-weight: bold;
+            font-size: 1rem;
+            color: var(--accent);
+            margin-bottom: 8px;
+            text-align: right;
+        }
+
+        .plan-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+
+        .plan-btn:hover {
+            background: var(--secondary);
+        }
+
+        .plan-btn.in-use {
+            background: var(--secondary);
+            cursor: not-allowed;
+        }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--dark);
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            position: relative;
+            animation: modalOpen 0.3s;
+        }
+
+        @keyframes modalOpen {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: rgba(255,255,255,0.6);
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            text-align: center;
+            color: var(--accent);
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .amount-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .max-btn {
+            background: rgba(255,255,255,0.1);
+            color: var(--accent);
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background: var(--primary);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+
+        .submit-btn:hover {
+            background: var(--secondary);
+        }
+
+        .info-message {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(255,193,7,0.1);
+            border-radius: 8px;
+            border-left: 3px solid var(--accent);
+            font-size: 0.85rem;
+        }
+
+        .ok-btn {
+            background: var(--accent);
+            color: var(--dark);
+            border: none;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px auto 0;
+            display: block;
+        }
+
+        .deposit-address {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .copy-btn {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: none;
+            padding: 7px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--accent);
+            font-size: 1rem;
+            cursor: pointer;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .verify-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background: var(--warning);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* QR Code Styles */
+        .qr-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 15px 0;
+        }
+
+        .qr-code {
+            width: 180px;
+            height: 180px;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .qr-code img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .qr-instructions {
+            text-align: center;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+            color: rgba(255,255,255,0.8);
+        }
+
+        /* Network Indicator */
+        .network-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 15px;
+            background: rgba(255, 193, 7, 0.1);
+            padding: 8px;
+            border-radius: 8px;
+            border-left: 3px solid var(--accent);
+        }
+
+        .network-indicator i {
+            color: var(--accent);
+        }
+
+        /* Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            animation: float linear infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* Click effect */
+        .click-effect {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+        }
+        
+        /* Copied notification */
+        .copied-notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--success);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .copied-notification.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Particles background -->
+    <div class="particles" id="particles"></div>
+    
+    <!-- Copied notification -->
+    <div class="copied-notification" id="copied-notification">¡Copiado!</div>
+
+    <!-- Auth Container (Login/Register) -->
+    <div class="auth-container" id="auth-container">
+        <h2 class="auth-title" id="auth-title">Login</h2>
+        <div class="auth-message" id="auth-message"></div>
+        <form class="auth-form" id="auth-form">
+            <div class="input-group" id="username-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" placeholder="Enter your username" required>
+            </div>
+            <div class="input-group" id="email-group" style="display: none;">
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="Enter your email">
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter your password" required>
+            </div>
+            <div class="input-group" id="confirm-password-group" style="display: none;">
+                <label for="confirm-password">Confirm Password</label>
+                <input type="password" id="confirm-password" placeholder="Confirm your password">
+            </div>
+            <button type="submit" class="auth-btn" id="auth-btn">Login</button>
+        </form>
+        <div class="auth-toggle">
+            <span id="toggle-text">Don't have an account?</span>
+            <a id="toggle-link">Register</a>
+        </div>
+    </div>
+
+    <!-- Main App Container (hidden by default) -->
+    <div class="app-container" id="app-container">
+        <div class="container">
+            <header>
+                <h1>USDT Mining</h1>
+                <p>Binance Smart Chain</p>
+            </header>
+
+            <div class="balance-container">
+                <div class="balance">Balance: <span id="current-balance">0.000</span> USDT</div>
+                <button class="btn" id="withdraw-btn"><i class="fas fa-coins"></i> Withdraw</button>
+            </div>
+
+            <div class="mining-circle" id="mining-circle">
+                <img src="png-transparent-usdt-cryptocurrencies-icon.png" alt="USDT Logo">
+                <h2>Tap to Mine</h2>
+            </div>
+
+            <h2 class="plans-title">VIP Plans</h2>
+            <div class="plans-container" id="plans-container">
+                <!-- Plans will be added by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Withdraw Modal -->
+        <div class="modal" id="withdraw-modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2 class="modal-title">Withdraw USDT</h2>
+                <div class="input-group">
+                    <label for="wallet-address">BEP20 Wallet Address</label>
+                    <input type="text" id="wallet-address" placeholder="Enter your BEP20 address">
+                </div>
+                <div class="input-group">
+                    <label for="withdraw-amount">Amount to Withdraw</label>
+                    <div class="amount-container">
+                        <input type="number" id="withdraw-amount" placeholder="Enter amount">
+                        <button class="max-btn" id="max-btn">MAX</button>
+                    </div>
+                </div>
+                <button class="submit-btn" id="submit-withdraw">Withdraw</button>
+                <div class="info-message">
+                    <p>Minimum withdrawal: <strong>10 USDT</strong></p>
+                    <p>Current balance: <strong><span id="modal-balance">0.000</span> USDT</strong></p>
+                    <button class="ok-btn" id="withdraw-ok">OK</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Plan Info Modal -->
+        <div class="modal" id="plan-info-modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2 class="modal-title" id="plan-modal-title">Plan Info</h2>
+                <div class="info-message">
+                    <p id="plan-modal-message">This plan is already in use.</p>
+                    <button class="ok-btn" id="plan-ok">OK</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deposit Modal -->
+        <div class="modal" id="deposit-modal">
+            <div class="modal-content">
+                <button class="back-btn" id="back-btn"><i class="fas fa-arrow-left"></i> Back</button>
+                <h2 class="modal-title">Deposit USDT</h2>
+                
+                <div class="network-indicator">
+                    <i class="fab fa-ethereum"></i>
+                    <span>Binance Smart Chain (BEP20)</span>
+                </div>
+                <!--- <p>Send <strong>USDT (BEP20)</strong> to this address:</p> --->
+                
+                <!-- QR Code Section (now at the top) -->
+                <div class="qr-container">
+                    <div class="qr-code" id="qr-code">
+                        <img id="qr-image" src="" alt="QR Code">
+                    </div>
+                    <p class="qr-instructions">Scan this QR code with your wallet app to make a deposit</p>
+                </div>
+                
+                <div class="input-group deposit-address">
+                    <input type="text" id="deposit-address" value="0x0903497954feB6b36C90c1B64493E581810dA6C7" readonly>
+                    <button class="copy-btn" id="copy-btn"><i class="far fa-copy"></i></button>
+                </div>
+                
+                <button class="verify-btn" id="verify-btn">
+                    <i class="fas fa-sync-alt"></i> Verify Deposit
+                </button>
+            </div>
+        </div>
+
+        <!-- Limit Reached Modal -->
+        <div class="modal" id="limit-modal">
+            <div class="modal-content">
+                <h2 class="modal-title">Limit Reached</h2>
+                <div class="info-message">
+                    <p>You have reached the Free Plan limit (8 USDT).</p>
+                    <p>Upgrade to a VIP Plan to continue mining.</p>
+                    <button class="ok-btn" id="limit-ok">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Auth System Variables
+        let isLoginView = true;
+        let currentUser = null;
+
+        // App Data
+        let balance = 0;
+        let miningRate = 0.002; // Free plan rate
+        let activePlan = 'free';
+        let freePlanMined = 0;
+        const freePlanLimit = 8;
+
+        // VIP Plans
+        const plans = [
+            {
+                id: 'free',
+                name: 'Free Plan',
+                price: 'FREE',
+                speed: '0.002 USDT/click',
+                limit: '8 USDT limit',
+                active: true,
+                miningRate: 0.002,
+                maxLimit: 8,
+                icon: 'fas fa-gem'
+            },
+            {
+                id: 'basic',
+                name: 'Basic Plan',
+                price: '10 USDT',
+                speed: '0.005 USDT/click',
+                limit: '27.66 USDT limit',
+                active: false,
+                miningRate: 0.005,
+                maxLimit: null,
+                icon: 'fas fa-medal'
+            },
+            {
+                id: 'standard',
+                name: 'Standard Plan',
+                price: '24 USDT',
+                speed: '0.01 USDT/click',
+                limit: '46.25 USDT limit',
+                active: false,
+                miningRate: 0.01,
+                maxLimit: null,
+                icon: 'fas fa-award'
+            },
+            {
+                id: 'premium',
+                name: 'Premium Plan',
+                price: '48 USDT',
+                speed: '0.02 USDT/click',
+                limit: '86.62 USDT limit',
+                active: false,
+                miningRate: 0.02,
+                maxLimit: null,
+                icon: 'fas fa-crown'
+            },
+            {
+                id: 'vip',
+                name: 'VIP Plan',
+                price: '99 USDT',
+                speed: '0.05 USDT/click',
+                limit: '176.85 USDT limit',
+                active: false,
+                miningRate: 0.05,
+                maxLimit: null,
+                icon: 'fas fa-star'
+            },
+            {
+                id: 'elite',
+                name: 'Elite Plan',
+                price: '199 USDT',
+                speed: '0.1 USDT/click',
+                limit: 'No limit',
+                active: false,
+                miningRate: 0.1,
+                maxLimit: null,
+                icon: 'fas fa-rocket'
+            }
+        ];
+
+        // DOM Elements
+        const authContainer = document.getElementById('auth-container');
+        const appContainer = document.getElementById('app-container');
+        const authTitle = document.getElementById('auth-title');
+        const authForm = document.getElementById('auth-form');
+        const authBtn = document.getElementById('auth-btn');
+        const toggleText = document.getElementById('toggle-text');
+        const toggleLink = document.getElementById('toggle-link');
+        const authMessage = document.getElementById('auth-message');
+        const usernameGroup = document.getElementById('username-group');
+        const emailGroup = document.getElementById('email-group');
+        const confirmPasswordGroup = document.getElementById('confirm-password-group');
+        
+        const miningCircle = document.getElementById('mining-circle');
+        const currentBalanceEl = document.getElementById('current-balance');
+        const modalBalance = document.getElementById('modal-balance');
+        const withdrawBtn = document.getElementById('withdraw-btn');
+        const withdrawModal = document.getElementById('withdraw-modal');
+        const planInfoModal = document.getElementById('plan-info-modal');
+        const depositModal = document.getElementById('deposit-modal');
+        const limitModal = document.getElementById('limit-modal');
+        const closeModals = document.querySelectorAll('.close-modal');
+        const backBtn = document.getElementById('back-btn');
+        const walletAddress = document.getElementById('wallet-address');
+        const withdrawAmount = document.getElementById('withdraw-amount');
+        const maxBtn = document.getElementById('max-btn');
+        const submitWithdraw = document.getElementById('submit-withdraw');
+        const copyBtn = document.getElementById('copy-btn');
+        const depositAddress = document.getElementById('deposit-address');
+        const verifyBtn = document.getElementById('verify-btn');
+        const plansContainer = document.getElementById('plans-container');
+        const planModalTitle = document.getElementById('plan-modal-title');
+        const planModalMessage = document.getElementById('plan-modal-message');
+        const withdrawOk = document.getElementById('withdraw-ok');
+        const planOk = document.getElementById('plan-ok');
+        const limitOk = document.getElementById('limit-ok');
+        const qrImage = document.getElementById('qr-image');
+        const copiedNotification = document.getElementById('copied-notification');
+
+        // Initialize the app
+        function init() {
+            // Check if user is already logged in
+            checkLoggedInUser();
+            
+            // Setup auth event listeners
+            setupAuthEventListeners();
+            
+            // Create particles
+            createParticles();
+            
+            // Generate QR code for deposit address
+            generateQRCode();
+        }
+
+        // Generate QR code for deposit address
+        function generateQRCode() {
+            const address = depositAddress.value;
+            const qrSize = 180;
+            const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${qrSize}x${qrSize}&data=${encodeURIComponent(address)}`;
+            
+            qrImage.src = qrApiUrl;
+            qrImage.alt = `QR Code for ${address}`;
+        }
+
+        // Check if user is logged in
+        function checkLoggedInUser() {
+            const loggedInUser = localStorage.getItem('currentUser');
+            if (loggedInUser) {
+                currentUser = JSON.parse(loggedInUser);
+                loadUserData();
+                showApp();
+            }
+        }
+
+        // Load user data from localStorage
+        function loadUserData() {
+            const userData = localStorage.getItem(`userData_${currentUser.username}`);
+            if (userData) {
+                const data = JSON.parse(userData);
+                balance = data.balance || 0;
+                miningRate = data.miningRate || 0.002;
+                activePlan = data.activePlan || 'free';
+                freePlanMined = data.freePlanMined || 0;
+            }
+        }
+
+        // Save user data to localStorage
+        function saveUserData() {
+            if (!currentUser) return;
+            
+            const userData = {
+                balance: balance,
+                miningRate: miningRate,
+                activePlan: activePlan,
+                freePlanMined: freePlanMined
+            };
+            
+            localStorage.setItem(`userData_${currentUser.username}`, JSON.stringify(userData));
+        }
+
+        // Show app interface
+        function showApp() {
+            authContainer.style.display = 'none';
+            appContainer.style.display = 'block';
+            
+            // Initialize app components
+            updateBalance();
+            renderPlans();
+            setupAppEventListeners();
+        }
+
+        // Show auth interface
+        function showAuth() {
+            authContainer.style.display = 'block';
+            appContainer.style.display = 'none';
+        }
+
+        // Setup auth event listeners
+        function setupAuthEventListeners() {
+            // Toggle between login and register
+            toggleLink.addEventListener('click', toggleAuthView);
+            
+            // Form submission
+            authForm.addEventListener('submit', handleAuthSubmit);
+        }
+
+        // Toggle between login and register views
+        function toggleAuthView() {
+            isLoginView = !isLoginView;
+            
+            if (isLoginView) {
+                authTitle.textContent = 'Login';
+                authBtn.textContent = 'Login';
+                toggleText.textContent = "Don't have an account?";
+                toggleLink.textContent = 'Register';
+                emailGroup.style.display = 'none';
+                confirmPasswordGroup.style.display = 'none';
+            } else {
+                authTitle.textContent = 'Register';
+                authBtn.textContent = 'Register';
+                toggleText.textContent = "Already have an account?";
+                toggleLink.textContent = 'Login';
+                emailGroup.style.display = 'block';
+                confirmPasswordGroup.style.display = 'block';
+            }
+            
+            // Clear form and message
+            authForm.reset();
+            showAuthMessage('', '');
+        }
+
+        // Handle auth form submission
+        function handleAuthSubmit(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const email = isLoginView ? '' : document.getElementById('email').value.trim();
+            const confirmPassword = isLoginView ? '' : document.getElementById('confirm-password').value;
+            
+            if (isLoginView) {
+                loginUser(username, password);
+            } else {
+                // Validate registration
+                if (password !== confirmPassword) {
+                    showAuthMessage('Passwords do not match', 'error');
+                    return;
+                }
+                
+                if (!email) {
+                    showAuthMessage('Email is required', 'error');
+                    return;
+                }
+                
+                registerUser(username, email, password);
+            }
+        }
+
+        // Show auth message
+        function showAuthMessage(message, type) {
+            authMessage.textContent = message;
+            authMessage.className = 'auth-message';
+            
+            if (type) {
+                authMessage.classList.add(type);
+                authMessage.style.display = 'block';
+            } else {
+                authMessage.style.display = 'none';
+            }
+        }
+
+        // Login user
+        function loginUser(username, password) {
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const user = users.find(u => u.username === username && u.password === password);
+            
+            if (user) {
+                currentUser = user;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                loadUserData();
+                showApp();
+                showAuthMessage('Login successful!', 'success');
+            } else {
+                showAuthMessage('Invalid username or password', 'error');
+            }
+        }
+
+        // Register new user
+        function registerUser(username, email, password) {
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            
+            // Check if username already exists
+            if (users.some(u => u.username === username)) {
+                showAuthMessage('Username already exists', 'error');
+                return;
+            }
+            
+            // Check if email already exists
+            if (users.some(u => u.email === email)) {
+                showAuthMessage('Email already registered', 'error');
+                return;
+            }
+            
+            // Create new user
+            const newUser = {
+                username,
+                email,
+                password
+            };
+            
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            // Log in the new user
+            currentUser = newUser;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            // Initialize user data
+            balance = 0;
+            miningRate = 0.002;
+            activePlan = 'free';
+            freePlanMined = 0;
+            saveUserData();
+            
+            showAuthMessage('Registration successful!', 'success');
+            setTimeout(() => showApp(), 1000);
+        }
+
+        // Setup app event listeners
+        function setupAppEventListeners() {
+            // Mining circle click
+            miningCircle.addEventListener('click', mineUSDT);
+
+            // Withdraw button
+            withdrawBtn.addEventListener('click', () => {
+                withdrawModal.classList.add('active');
+            });
+
+            // Max button
+            maxBtn.addEventListener('click', () => {
+                withdrawAmount.value = balance.toFixed(3);
+            });
+
+            // Submit withdraw
+            submitWithdraw.addEventListener('click', handleWithdraw);
+
+            // Copy address
+            copyBtn.addEventListener('click', copyDepositAddress);
+
+            // Verify deposit
+            verifyBtn.addEventListener('click', verifyDeposit);
+
+            // Close modals
+            closeModals.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.modal').forEach(modal => {
+                        modal.classList.remove('active');
+                    });
+                });
+            });
+
+            // Back button
+            backBtn.addEventListener('click', () => {
+                depositModal.classList.remove('active');
+            });
+
+            // OK buttons
+            withdrawOk.addEventListener('click', () => withdrawModal.classList.remove('active'));
+            planOk.addEventListener('click', () => planInfoModal.classList.remove('active'));
+            limitOk.addEventListener('click', () => limitModal.classList.remove('active'));
+
+            // Close modal when clicking outside
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal')) {
+                    e.target.classList.remove('active');
+                }
+            });
+
+            // Plan activation
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('plan-btn')) {
+                    const planId = e.target.getAttribute('data-id');
+                    activatePlan(planId);
+                }
+            });
+        }
+
+        // Update balance display
+        function updateBalance() {
+            currentBalanceEl.textContent = balance.toFixed(3);
+            modalBalance.textContent = balance.toFixed(3);
+            saveUserData();
+        }
+
+        // Render plans
+        function renderPlans() {
+            plansContainer.innerHTML = '';
+            plans.forEach(plan => {
+                const planEl = document.createElement('div');
+                planEl.className = 'plan';
+                planEl.innerHTML = `
+                    <div class="plan-info">
+                        <div class="plan-name">
+                            <i class="${plan.icon}"></i>
+                            ${plan.name}
+                        </div>
+                        <div class="plan-details">Speed: ${plan.speed}</div>
+                        <div class="plan-details">${plan.limit}</div>
+                        ${plan.active ? '<div class="plan-status">ACTIVE</div>' : ''}
+                    </div>
+                    <div>
+                        <div class="plan-price">${plan.price}</div>
+                        <button class="plan-btn ${plan.active ? 'in-use' : ''}" data-id="${plan.id}">
+                            ${plan.active ? 'In Use' : 'Activate'}
+                        </button>
+                    </div>
+                `;
+                plansContainer.appendChild(planEl);
+            });
+        }
+
+        // Mining function
+        function mineUSDT() {
+            // Check free plan limit
+            if (activePlan === 'free' && freePlanMined >= freePlanLimit) {
+                limitModal.classList.add('active');
+                return;
+            }
+
+            // Add to balance
+            balance += miningRate;
+            if (activePlan === 'free') freePlanMined += miningRate;
+            
+            // Save and update
+            saveUserData();
+            updateBalance();
+
+            // Create click effect
+            createClickEffect();
+        }
+
+        // Create click effect animation
+        function createClickEffect() {
+            const effect = document.createElement('div');
+            effect.className = 'click-effect';
+            
+            // Random position around the circle
+            const angle = Math.random() * Math.PI * 2;
+            const radius = 80;
+            const x = radius * Math.cos(angle);
+            const y = radius * Math.sin(angle);
+            
+            effect.style.left = `calc(50% + ${x}px)`;
+            effect.style.top = `calc(50% + ${y}px)`;
+            
+            miningCircle.appendChild(effect);
+            
+            // Animate
+            effect.animate([
+                { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
+                { transform: 'translate(-50%, -50%) scale(3)', opacity: 0 }
+            ], {
+                duration: 1000,
+                easing: 'ease-out'
+            });
+            
+            // Remove after animation
+            setTimeout(() => effect.remove(), 1000);
+        }
+
+        // Handle withdraw
+        function handleWithdraw() {
+            const amount = parseFloat(withdrawAmount.value);
+            const address = walletAddress.value.trim();
+            
+            if (!address) {
+                alert('Please enter your BEP20 address');
+                return;
+            }
+            
+            if (isNaN(amount) || amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            
+            if (amount < 10) {
+                alert('Minimum withdrawal is 10 USDT');
+                return;
+            }
+            
+            if (amount > balance) {
+                alert('Insufficient balance');
+                return;
+            }
+            
+            // Process withdrawal (simulated)
+            balance -= amount;
+            updateBalance();
+            withdrawModal.classList.remove('active');
+            walletAddress.value = '';
+            withdrawAmount.value = '';
+            
+            alert(`Withdrawal of ${amount.toFixed(3)} USDT to ${address} has been processed.`);
+        }
+
+        // Activate plan
+        function activatePlan(planId) {
+            const plan = plans.find(p => p.id === planId);
+            
+            if (plan.id === 'free') {
+                if (activePlan === 'free') {
+                    showPlanMessage('Free Plan', 'This plan is already in use.');
+                } else {
+                    // Switch to free plan
+                    activePlan = 'free';
+                    miningRate = plan.miningRate;
+                    updatePlansStatus();
+                }
+            } else {
+                // For paid plans, show deposit modal
+                showPlanMessage(plan.name, `Deposit ${plan.price} to activate this plan.`);
+                depositModal.classList.add('active');
+            }
+        }
+
+        // Show plan message
+        function showPlanMessage(title, message) {
+            planModalTitle.textContent = title;
+            planModalMessage.textContent = message;
+            planInfoModal.classList.add('active');
+        }
+
+        // Update plans active status
+        function updatePlansStatus() {
+            plans.forEach(p => p.active = p.id === activePlan);
+            renderPlans();
+            saveUserData();
+        }
+
+        // Copy deposit address
+        function copyDepositAddress() {
+            depositAddress.select();
+            document.execCommand('copy');
+            
+            // Show feedback
+            copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+            
+            // Show notification
+            copiedNotification.classList.add('show');
+            setTimeout(() => {
+                copiedNotification.classList.remove('show');
+            }, 2000);
+            
+            setTimeout(() => {
+                copyBtn.innerHTML = '<i class="far fa-copy"></i>';
+            }, 2000);
+        }
+
+        // Verify deposit
+        function verifyDeposit() {
+            verifyBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+            verifyBtn.disabled = true;
+            
+            setTimeout(() => {
+                verifyBtn.innerHTML = '<i class="fas fa-times"></i> No deposit found';
+                verifyBtn.style.background = 'var(--danger)';
+                
+                setTimeout(() => {
+                    verifyBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Verify Deposit';
+                    verifyBtn.style.background = 'var(--warning)';
+                    verifyBtn.disabled = false;
+                }, 3000);
+            }, 2000);
+        }
+
+        // Create particles background
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const count = 20;
+            
+            for (let i = 0; i < count; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // Random size and position
+                const size = Math.random() * 8 + 3;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.bottom = `-${size}px`;
+                
+                // Random animation
+                const duration = Math.random() * 15 + 10;
+                particle.style.animationDuration = `${duration}s`;
+                particle.style.animationDelay = `${Math.random() * 5}s`;
+                
+                container.appendChild(particle);
+            }
+        }
+
+        // Initialize the app
+        init();
+    </script>
+</body>
+</html>
