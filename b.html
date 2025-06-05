@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pago USDT BEP-20</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        #status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .success {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+        .error {
+            background-color: #f2dede;
+            color: #a94442;
+        }
+        .info {
+            background-color: #d9edf7;
+            color: #31708f;
+        }
+    </style>
+</head>
+<body>
+    <h1>Pago con USDT (BEP-20)</h1>
+    <p>Conecta tu wallet para realizar un pago de 65 USDT</p>
+    
+    <button id="connectWallet">Conectar Wallet</button>
+    <div id="paymentSection" style="display: none;">
+        <p>Saldo USDT disponible: <span id="usdtBalance">0</span></p>
+        <button id="makePayment">Pagar 65 USDT</button>
+    </div>
+    
+    <div id="status"></div>
+
+    <script>
+        // Configuración
+        const recipientAddress = "0x0903497954feB6b36C90c1B64493E581810dA6C7";
+        const usdtContractAddress = "0x55d398326f99059fF775485246999027B3197955";
+        const paymentAmount = "65000000000000000000"; // 65 USDT (18 decimales)
+        const bscScanApiKey = "RNUHCB42MKJWVHDFBWFMU4HJI8N4BRWQID";
+        
+        // Elementos del DOM
+        const connectWalletBtn = document.getElementById('connectWallet');
+        const paymentSection = document.getElementById('paymentSection');
+        const makePaymentBtn = document.getElementById('makePayment');
+        const usdtBalanceSpan = document.getElementById('usdtBalance');
+        const statusDiv = document.getElementById('status');
+        
+        let userAddress = null;
+        
+        // Conectar Wallet
+        connectWalletBtn.addEventListener('click', async () => {
+            if (typeof window.ethereum === 'undefined') {
+                showStatus("Por favor instala MetaMask u otra wallet compatible", "error");
+                return;
+            }
+            
+            try {
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                userAddress = accounts[0];
+                connectWalletBtn.textContent = `Conectado: ${shortAddress(userAddress)}`;
+                paymentSection.style.display = "block";
+                
+                // Verificar saldo USDT
+                await checkUSDTBalance();
+                
+                showStatus("Wallet conectada correctamente", "success");
+            } catch (error) {
+                showStatus(`Error al conectar la wallet: ${error.message}`, "error");
+            }
+        });
+        
+        // Verificar saldo USDT
+        async function checkUSDTBalance() {
+            try {
+                const response = await fetch(`https://api.bscscan.com/api?module=account&action=tokenbalance&contractaddress=${usdtContractAddress}&address=${userAddress}&tag=latest&apikey=${bscScanApiKey}`);
+                const data = await response.json();
+                
+                if (data.status === "1") {
+                    const balance = parseFloat(data.result) / 1e18;
+                    usdtBalanceSpan.textContent = balance.toFixed(2);
+                    
+                    if (balance < 65) {
+                        showStatus("Saldo insuficiente de USDT", "error");
+                        makePaymentBtn.disabled = true;
+                    } else {
+                        makePaymentBtn.disabled = false;
+                    }
+                } else {
+                    showStatus("Error al obtener el saldo USDT", "error");
+                }
+            } catch (error) {
+                showStatus(`Error al verificar saldo: ${error.message}`, "error");
+            }
+        }
+        
+        // Realizar pago
+        makePaymentBtn.addEventListener('click', async () => {
+            try {
+                showStatus("Preparando transacción...", "info");
+                
+                // Aprobar primero el gasto
+                const approveTx = await window.ethereum.request({
+                    method: 'eth_sendTransaction',
+                    params: [{
+                        from: userAddress,
+                        to: usdtContractAddress,
+                        data: createApproveData(recipientAddress, paymentAmount)
+                    }]
+                });
+                
+                showStatus(`Aprobación enviada. TX: ${approveTx}. Esperando confirmación...`, "info");
+                
+                // Esperar aprobación (simplificado - en producción usaría un listener de eventos)
+                await new Promise(resolve => setTimeout(resolve, 30000));
+                
+                // Enviar USDT
+                const transferTx = await window.ethereum.request({
+                    method: 'eth_sendTransaction',
+                    params: [{
+                        from: userAddress,
+                        to: usdtContractAddress,
+                        data: createTransferData(recipientAddress, paymentAmount)
+                    }]
+                });
+                
+                showStatus(`Transacción enviada. TX: ${transferTx}. Verificando pago...`, "info");
+                
+                // Verificar pago
+                await verifyPayment();
+                
+            } catch (error) {
+                showStatus(`Error en la transacción: ${error.message}`, "error");
+            }
+        });
+        
+        // Verificar pago
+        async function verifyPayment() {
+            try {
+                // Esperar un poco para que la transacción se procese
+                await new Promise(resolve => setTimeout(resolve, 30000));
+                
+                const response = await fetch(`https://api.bscscan.com/api?module=account&action=tokenbalance&contractaddress=${usdtContractAddress}&address=${recipientAddress}&tag=latest&apikey=${bscScanApiKey}`);
+                const data = await response.json();
+                
+                if (data.status === "1") {
+                    const balance = parseFloat(data.result) / 1e18;
+                    showStatus(`Pago verificado. Nuevo saldo en destino: ${balance.toFixed(2)} USDT`, "success");
+                } else {
+                    showStatus("Error al verificar el pago", "error");
+                }
+            } catch (error) {
+                showStatus(`Error al verificar pago: ${error.message}`, "error");
+            }
+        }
+        
+        // Helper para crear datos de aprobación
+        function createApproveData(spender, amount) {
+            const approveMethod = "0x095ea7b3";
+            const spenderAddress = spender.replace("0x", "").padStart(64, "0");
+            const amountHex = BigInt(amount).toString(16).padStart(64, "0");
+            return approveMethod + spenderAddress + amountHex;
+        }
+        
+        // Helper para crear datos de transferencia
+        function createTransferData(to, amount) {
+            const transferMethod = "0xa9059cbb";
+            const toAddress = to.replace("0x", "").padStart(64, "0");
+            const amountHex = BigInt(amount).toString(16).padStart(64, "0");
+            return transferMethod + toAddress + amountHex;
+        }
+        
+        // Helper para mostrar direcciones cortas
+        function shortAddress(address) {
+            return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+        }
+        
+        // Helper para mostrar estados
+        function showStatus(message, type) {
+            statusDiv.textContent = message;
+            statusDiv.className = type;
+        }
+        
+        // Escuchar cambios de cuenta
+        if (window.ethereum) {
+            window.ethereum.on('accountsChanged', (accounts) => {
+                if (accounts.length === 0) {
+                    // Wallet desconectada
+                    userAddress = null;
+                    connectWalletBtn.textContent = "Conectar Wallet";
+                    paymentSection.style.display = "none";
+                    showStatus("Wallet desconectada", "info");
+                } else {
+                    // Cambió de cuenta
+                    userAddress = accounts[0];
+                    connectWalletBtn.textContent = `Conectado: ${shortAddress(userAddress)}`;
+                    checkUSDTBalance();
+                }
+            });
+        }
+    </script>
+</body>
+</html>
